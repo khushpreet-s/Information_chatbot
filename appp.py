@@ -17,14 +17,9 @@ from fastapi import FastAPI
 import os
 import streamlit as st
 
-# Load secrets
-st.secrets.load_config_file("secrets.toml")
-
-# Access OpenAI API key from secrets
-api_key = st.secrets["openai"]["api_key"]
-
-# Initialize OpenAI client
-llm = ChatOpenAI(model="gpt-3.5-turbo", temperature=0, api_key=api_key)
+import os
+os.environ["OPENAI_API_KEY"] = "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"
+llm = ChatOpenAI(model="gpt-3.5-turbo", temperature=0)
 
 
 # Load PDF files and combine text
