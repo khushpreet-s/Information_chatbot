@@ -1,9 +1,9 @@
 import streamlit as st
 from PIL import Image
 from PyPDF2 import PdfReader
-from langchain.embeddings.openai import OpenAIEmbeddings
+from langchain_openai import OpenAIEmbeddings
 from langchain.text_splitter import CharacterTextSplitter
-from langchain.vectorstores import FAISS
+from langchain_community.vectorstores import FAISS
 from langchain.chains import create_history_aware_retriever, create_retrieval_chain
 from langchain.chains.combine_documents import create_stuff_documents_chain
 from langchain_community.chat_message_histories import ChatMessageHistory
@@ -15,12 +15,10 @@ from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain.chains.question_answering import load_qa_chain
 from fastapi import FastAPI
 import os
-import streamlit as st
 
-import os
+# Set OpenAI API key
 os.environ["OPENAI_API_KEY"] = "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"
 llm = ChatOpenAI(model="gpt-3.5-turbo", temperature=0)
-
 
 # Load PDF files and combine text
 pdfreader1 = PdfReader('banking.pdf')
