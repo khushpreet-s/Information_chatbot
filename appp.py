@@ -17,8 +17,8 @@ from fastapi import FastAPI
 import os
 
 # Set OpenAI API key
-os.environ["OPENAI_API_KEY"] = "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"
-llm = ChatOpenAI(model="gpt-3.5-turbo", temperature=0)
+OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
+llm = ChatOpenAI(model="gpt-3.5-turbo", temperature=0, api_key=OPENAI_API_KEY)
 
 # Load PDF files and combine text
 pdfreader1 = PdfReader('banking.pdf')
