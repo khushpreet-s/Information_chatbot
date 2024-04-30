@@ -15,10 +15,17 @@ from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain.chains.question_answering import load_qa_chain
 from fastapi import FastAPI
 import os
+import streamlit as st
 
-# Set OpenAI API key
-os.environ["OPENAI_API_KEY"] = "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"
-llm = ChatOpenAI(model="gpt-3.5-turbo", temperature=0)
+# Load secrets
+st.secrets.load_config_file("secrets.toml")
+
+# Access OpenAI API key from secrets
+api_key = st.secrets["openai"]["api_key"]
+
+# Initialize OpenAI client
+llm = ChatOpenAI(model="gpt-3.5-turbo", temperature=0, api_key=api_key)
+
 
 # Load PDF files and combine text
 pdfreader1 = PdfReader('banking.pdf')
