@@ -17,7 +17,7 @@ from fastapi import FastAPI
 import os
 
 # Set OpenAI API key
-os.environ["OPENAI_API_KEY"] = "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"
+os.environ["OPENAI_API_KEY"] = "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"
 llm = ChatOpenAI(model="gpt-3.5-turbo", temperature=0)
 
 # Load PDF files and combine text
@@ -71,10 +71,14 @@ question_answer_chain = create_stuff_documents_chain(llm, qa_prompt)
 rag_chain = create_retrieval_chain(history_aware_retriever, question_answer_chain)
 
 ### Statefully manage chat history ###
+store = {}
+
+
 def get_session_history(session_id: str) -> BaseChatMessageHistory:
-    if session_id not in st.session_state:
-        st.session_state[session_id] = ChatMessageHistory()
-    return st.session_state[session_id]
+    if session_id not in store:
+        store[session_id] = ChatMessageHistory()
+    return store[session_id]
+
 
 conversational_rag_chain = RunnableWithMessageHistory(
     rag_chain,
