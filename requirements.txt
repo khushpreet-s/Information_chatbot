@@ -1,0 +1,7 @@
+streamlit
+PyPDF2
+PIL
+langchain
+fastapi
+os
+langchain_openai
