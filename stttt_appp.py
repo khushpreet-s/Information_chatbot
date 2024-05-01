@@ -16,22 +16,18 @@ from langchain.chains.question_answering import load_qa_chain
 from fastapi import FastAPI
 import os
 
-# Securely load API key from Streamlit secrets (if available)
-api_key = st.secrets.get("OPENAI_API_KEY")
-
-# If API key not found in secrets, handle it gracefully
-if not api_key:
-    st.error("Please set your OpenAI API key in Streamlit secrets.")
-else:
-    # Set environment variable (optional, can be removed if unnecessary)
-    os.environ["OPENAI_API_KEY"] = api_key
+# Set OpenAI API key
+os.environ["OPENAI_API_KEY"] = ""
+llm = ChatOpenAI(model="gpt-4-turbo", temperature=1.0)
 
 # Load PDF files and combine text
-pdfreader1 = PdfReader('banking.pdf')
-pdfreader2 = PdfReader('banking2.pdf')
+pdfreader1 = PdfReader('sustainability-16-01864-v2.pdf')
+pdfreader2 = PdfReader('AI Adoption Strategy.pdf')
+pdfreader3 = PdfReader('1-s2.0-S2199853123002469-main.pdf')
 raw_text_1 = ''.join(page.extract_text() for page in pdfreader1.pages)
 raw_text_2 = ''.join(page.extract_text() for page in pdfreader2.pages)
-raw_text_combined = raw_text_1 + ' ' + raw_text_2
+raw_text_3 = ''.join(page.extract_text() for page in pdfreader3.pages)
+raw_text_combined = raw_text_1 + ' ' + raw_text_2 + ' ' + raw_text_3
 
 # Split text
 text_splitter = CharacterTextSplitter(separator="\n", chunk_size=800, chunk_overlap=200, length_function=len)
