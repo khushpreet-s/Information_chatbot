@@ -26,7 +26,7 @@ else:
     # Set environment variable (optional, can be removed if unnecessary)
     os.environ["OPENAI_API_KEY"] = api_key
 
-llm = ChatOpenAI(model="gpt-3.5-turbo", temperature=1.0)
+llm = ChatOpenAI(model="gpt-4-turbo", temperature=1.0)
 
 
 # Load PDF files and combine text

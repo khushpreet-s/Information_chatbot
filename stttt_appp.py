@@ -14,6 +14,7 @@ from langchain_openai import ChatOpenAI
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain.chains.question_answering import load_qa_chain
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 import os
 
 # Set OpenAI API key
@@ -92,10 +93,19 @@ conversational_rag_chain = RunnableWithMessageHistory(
 
 # Initialize FastAPI
 app = FastAPI()
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Allow requests from any origin
+    allow_credentials=True,
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allow_headers=["*"],
+)
+
 
 # Define API endpoint
 @app.post('/api/chatbot')
 def chatbot_api(query: str, session_id: str = ''):
+    print('route accessed')
     session_history = get_session_history(session_id)
 
     # Invoke the chat chain to get the response
