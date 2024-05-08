@@ -1,5 +1,6 @@
 import streamlit as st
 from PIL import Image
+
 from PyPDF2 import PdfReader
 from langchain_openai import OpenAIEmbeddings
 from langchain.text_splitter import CharacterTextSplitter
@@ -16,27 +17,34 @@ from langchain.chains.question_answering import load_qa_chain
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import os
+import pandas as pd
 
 # Set OpenAI API key
 os.environ["OPENAI_API_KEY"] = ""
-llm = ChatOpenAI(model="gpt-4-turbo", temperature=1.0)
+llm = ChatOpenAI(model="gpt-3.5-turbo", temperature=1.0)
 
 # Load PDF files and combine text
-pdfreader1 = PdfReader('sustainability-16-01864-v2.pdf')
-pdfreader2 = PdfReader('AI Adoption Strategy.pdf')
-pdfreader3 = PdfReader('1-s2.0-S2199853123002469-main.pdf')
-raw_text_1 = ''.join(page.extract_text() for page in pdfreader1.pages)
-raw_text_2 = ''.join(page.extract_text() for page in pdfreader2.pages)
-raw_text_3 = ''.join(page.extract_text() for page in pdfreader3.pages)
-raw_text_combined = raw_text_1 + ' ' + raw_text_2 + ' ' + raw_text_3
+pdfreader1 = pd.read_csv('Finance.csv')
+# pdfreader2 = pd.read_csv('HCM_Data.csv')
+# pdfreader3 = pd.read_csv('Procurement.csv')
+# combined_data = pd.concat([pdfreader1,pdfreader2, pdfreader3],ignore_index=True)
 
-# Split text
-text_splitter = CharacterTextSplitter(separator="\n", chunk_size=800, chunk_overlap=200, length_function=len)
-texts = text_splitter.split_text(raw_text_combined)
+# Clean data (remove missing values, outliers, etc.)
+pdfreader1.dropna(inplace=True)
+# pdfreader2.dropna(inplace=True)
+# pdfreader1.dropna(inplace=True)
 
-# Download embeddings from OpenAI
+# Encode categorical variables
+# pdfreader3 = pd.get_dummies(pdfreader3, columns=['Supplier Name', 'Item Name', 'Item Category'])
+# pdfreader2 = pd.get_dummies(pdfreader2, columns=['Department', 'Nationality', 'Gender'])
+pdfreader1 = pd.get_dummies(pdfreader1)
+
+# Convert datetime features
+# pdfreader3['PO Date'] = pd.to_datetime(pdfreader3['PO Date'], dayfirst=True)
+# pdfreader1['Date of Expense'] = pd.to_datetime(pdfreader1['Date of Expense'])
+
 embeddings = OpenAIEmbeddings()
-vectorstore = FAISS.from_texts(texts, embeddings)
+vectorstore = FAISS.from_texts(pdfreader1, embeddings)
 retriever = vectorstore.as_retriever()
 chain = load_qa_chain(llm, chain_type="stuff")
 

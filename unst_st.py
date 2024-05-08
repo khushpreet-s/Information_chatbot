@@ -14,20 +14,12 @@ from langchain_openai import ChatOpenAI
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain.chains.question_answering import load_qa_chain
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 import os
 
-# Securely load API key from Streamlit secrets (if available)
-api_key = st.secrets.get("OPENAI_API_KEY")
-
-# If API key not found in secrets, handle it gracefully
-if not api_key:
-    st.error("Please set your OpenAI API key in Streamlit secrets.")
-else:
-    # Set environment variable (optional, can be removed if unnecessary)
-    os.environ["OPENAI_API_KEY"] = api_key
-
+# Set OpenAI API key
+os.environ["OPENAI_API_KEY"] = ""
 llm = ChatOpenAI(model="gpt-4-turbo", temperature=1.0)
-
 
 # Load PDF files and combine text
 pdfreader1 = PdfReader('sustainability-16-01864-v2.pdf')
@@ -101,10 +93,19 @@ conversational_rag_chain = RunnableWithMessageHistory(
 
 # Initialize FastAPI
 app = FastAPI()
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Allow requests from any origin
+    allow_credentials=True,
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allow_headers=["*"],
+)
+
 
 # Define API endpoint
 @app.post('/api/chatbot')
 def chatbot_api(query: str, session_id: str = ''):
+    print('route accessed')
     session_history = get_session_history(session_id)
 
     # Invoke the chat chain to get the response
